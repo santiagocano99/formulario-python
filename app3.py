@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+import webbrowser
 
 
 # ============================================================
@@ -19,6 +20,16 @@ COLOR_BLANCO = "#FFFFFF"
 # Colores para resaltar el resultado
 COLOR_RESALTADO_AMARILLO = "#FFF59D"
 COLOR_RESALTADO_VERDE = "#C8E6C9"
+
+
+# ============================================================
+# LINK DE SHAREPOINT
+# ============================================================
+
+LINK_DOCUMENTOS = (
+    "https://credibanco.sharepoint.com/:x:/g/gestiondocumental/"
+    "ET0awZ9z6V1Gi6ldXZ-AHPIBL3ui_44-1-ptXvitXFenyg?e=CQ1WRR"
+)
 
 
 # ============================================================
@@ -131,7 +142,390 @@ def copiar_texto(texto, ventana_resultado):
 
 
 # ============================================================
-# MOSTRAR RESULTADO
+# ABRIR LISTADO DE DOCUMENTOS
+# ============================================================
+
+def abrir_listado_documentos():
+
+    try:
+
+        webbrowser.open(LINK_DOCUMENTOS)
+
+    except Exception as error:
+
+        messagebox.showerror(
+            "Error",
+            f"No fue posible abrir el listado de documentos.\n\n{error}",
+            parent=ventana
+        )
+
+
+# ============================================================
+# MOSTRAR DOCUMENTOS NECESARIOS PARA LA INICIATIVA
+# ============================================================
+
+def mostrar_documentos_necesarios():
+
+    # --------------------------------------------------------
+    # OBTENER INFORMACIÓN
+    # --------------------------------------------------------
+
+    nombre_iniciativa = entrada_nombre.get().strip()
+    subproceso = entrada_subproceso.get().strip()
+
+    # --------------------------------------------------------
+    # VALIDAR NOMBRE
+    # --------------------------------------------------------
+
+    if not nombre_iniciativa:
+
+        messagebox.showwarning(
+            "Información pendiente",
+            "Por favor ingresa el nombre de la iniciativa, producto, "
+            "servicio, proceso o tema.",
+            parent=ventana
+        )
+
+        entrada_nombre.focus_set()
+
+        return
+
+    # --------------------------------------------------------
+    # VALIDAR SUBPROCESO
+    # --------------------------------------------------------
+
+    if not subproceso:
+
+        messagebox.showwarning(
+            "Información pendiente",
+            "Por favor ingresa el Subproceso objetivo.",
+            parent=ventana
+        )
+
+        entrada_subproceso.focus_set()
+
+        return
+
+    # --------------------------------------------------------
+    # VALIDAR LAS 10 PREGUNTAS
+    # --------------------------------------------------------
+
+    for i, variable in enumerate(respuestas_si_no):
+
+        if variable.get() == "":
+
+            messagebox.showwarning(
+                "Respuesta pendiente",
+                f"Por favor responde la pregunta {i + 3}.",
+                parent=ventana
+            )
+
+            return
+
+    # --------------------------------------------------------
+    # OBTENER SOLO LAS CATEGORÍAS CON "SÍ"
+    # --------------------------------------------------------
+
+    categorias_requeridas = []
+
+    for i, variable in enumerate(respuestas_si_no):
+
+        if variable.get() == "Sí":
+
+            categorias_requeridas.append(
+                preguntas_documentos[i]["documento"]
+            )
+
+    # ========================================================
+    # CREAR NUEVA VENTANA
+    # ========================================================
+
+    ventana_documentos = tk.Toplevel(ventana)
+
+    ventana_documentos.title(
+        "Documentos necesarios para la iniciativa"
+    )
+
+    ventana_documentos.geometry(
+        "850x700"
+    )
+
+    ventana_documentos.minsize(
+        700,
+        600
+    )
+
+    ventana_documentos.configure(
+        bg=COLOR_FONDO
+    )
+
+    ventana_documentos.transient(
+        ventana
+    )
+
+    # ========================================================
+    # ENCABEZADO
+    # ========================================================
+
+    encabezado = tk.Frame(
+        ventana_documentos,
+        bg=COLOR_AZUL_OSCURO,
+        height=110
+    )
+
+    encabezado.pack(
+        fill="x"
+    )
+
+    encabezado.pack_propagate(
+        False
+    )
+
+    titulo = tk.Label(
+        encabezado,
+        text="Documentos necesarios para esta iniciativa",
+        font=("Arial", 18, "bold"),
+        bg=COLOR_AZUL_OSCURO,
+        fg=COLOR_BLANCO
+    )
+
+    titulo.pack(
+        pady=(20, 3)
+    )
+
+    subtitulo = tk.Label(
+        encabezado,
+        text="Resultado basado en las respuestas del cuestionario",
+        font=("Arial", 10),
+        bg=COLOR_AZUL_OSCURO,
+        fg="#D9E8F8"
+    )
+
+    subtitulo.pack()
+
+    # ========================================================
+    # CONTENEDOR
+    # ========================================================
+
+    contenedor = tk.Frame(
+        ventana_documentos,
+        bg=COLOR_FONDO
+    )
+
+    contenedor.pack(
+        fill="both",
+        expand=True,
+        padx=30,
+        pady=20
+    )
+
+    # ========================================================
+    # INFORMACIÓN DE LA INICIATIVA
+    # ========================================================
+
+    tarjeta_info = tk.Frame(
+        contenedor,
+        bg=COLOR_TARJETA,
+        highlightthickness=1,
+        highlightbackground=COLOR_BORDE
+    )
+
+    tarjeta_info.pack(
+        fill="x",
+        pady=(0, 15)
+    )
+
+    label_iniciativa_titulo = tk.Label(
+        tarjeta_info,
+        text="Iniciativa / Tema",
+        font=("Arial", 10, "bold"),
+        bg=COLOR_TARJETA,
+        fg=COLOR_TEXTO_SECUNDARIO
+    )
+
+    label_iniciativa_titulo.pack(
+        anchor="w",
+        padx=20,
+        pady=(15, 2)
+    )
+
+    label_iniciativa = tk.Label(
+        tarjeta_info,
+        text=nombre_iniciativa,
+        font=("Arial", 12, "bold"),
+        bg=COLOR_TARJETA,
+        fg=COLOR_TEXTO
+    )
+
+    label_iniciativa.pack(
+        anchor="w",
+        padx=20,
+        pady=(0, 10)
+    )
+
+    label_subproceso_titulo = tk.Label(
+        tarjeta_info,
+        text="Sub Proceso objetivo",
+        font=("Arial", 10, "bold"),
+        bg=COLOR_TARJETA,
+        fg=COLOR_TEXTO_SECUNDARIO
+    )
+
+    label_subproceso_titulo.pack(
+        anchor="w",
+        padx=20,
+        pady=(0, 2)
+    )
+
+    label_subproceso = tk.Label(
+        tarjeta_info,
+        text=subproceso,
+        font=("Arial", 12, "bold"),
+        bg=COLOR_TARJETA,
+        fg=COLOR_TEXTO
+    )
+
+    label_subproceso.pack(
+        anchor="w",
+        padx=20,
+        pady=(0, 15)
+    )
+
+    # ========================================================
+    # TÍTULO DOCUMENTOS
+    # ========================================================
+
+    titulo_documentos = tk.Label(
+        contenedor,
+        text="Documentos que necesitaría la iniciativa",
+        font=("Arial", 14, "bold"),
+        bg=COLOR_FONDO,
+        fg=COLOR_TEXTO
+    )
+
+    titulo_documentos.pack(
+        anchor="w",
+        pady=(0, 10)
+    )
+
+    # ========================================================
+    # ÁREA DE DOCUMENTOS
+    # ========================================================
+
+    marco_documentos = tk.Frame(
+        contenedor,
+        bg=COLOR_TARJETA,
+        highlightthickness=1,
+        highlightbackground=COLOR_BORDE
+    )
+
+    marco_documentos.pack(
+        fill="both",
+        expand=True
+    )
+
+    texto_documentos = tk.Text(
+        marco_documentos,
+        font=("Arial", 11),
+        bg=COLOR_TARJETA,
+        fg=COLOR_TEXTO,
+        relief="flat",
+        bd=0,
+        wrap="word",
+        padx=20,
+        pady=20
+    )
+
+    texto_documentos.pack(
+        side="left",
+        fill="both",
+        expand=True
+    )
+
+    scrollbar_documentos = tk.Scrollbar(
+        marco_documentos,
+        orient="vertical",
+        command=texto_documentos.yview
+    )
+
+    scrollbar_documentos.pack(
+        side="right",
+        fill="y"
+    )
+
+    texto_documentos.configure(
+        yscrollcommand=scrollbar_documentos.set
+    )
+
+    # ========================================================
+    # MOSTRAR RESULTADO
+    # ========================================================
+
+    if categorias_requeridas:
+
+        texto_documentos.insert(
+            tk.END,
+            "Según las respuestas marcadas como \"Sí\", "
+            "los documentos que necesitaría esta iniciativa son:\n\n"
+        )
+
+        for i, documento in enumerate(
+            categorias_requeridas,
+            start=1
+        ):
+
+            texto_documentos.insert(
+                tk.END,
+                f"{i}. {documento}\n\n"
+            )
+
+    else:
+
+        texto_documentos.insert(
+            tk.END,
+            "De acuerdo con las respuestas del cuestionario, "
+            "no se identificaron documentos requeridos entre las "
+            "categorías evaluadas."
+        )
+
+    texto_documentos.config(
+        state="disabled"
+    )
+
+    # ========================================================
+    # BOTONES
+    # ========================================================
+
+    botones = tk.Frame(
+        ventana_documentos,
+        bg=COLOR_FONDO
+    )
+
+    botones.pack(
+        pady=(0, 20)
+    )
+
+    boton_cerrar = tk.Button(
+        botones,
+        text="Cerrar",
+        command=ventana_documentos.destroy,
+        font=("Arial", 10, "bold"),
+        bg=COLOR_AZUL,
+        fg=COLOR_BLANCO,
+        activebackground=COLOR_AZUL_OSCURO,
+        activeforeground=COLOR_BLANCO,
+        relief="flat",
+        bd=0,
+        cursor="hand2",
+        padx=25,
+        pady=8
+    )
+
+    boton_cerrar.pack()
+
+
+# ============================================================
+# MOSTRAR RESULTADO DEL PROMPT
 # ============================================================
 
 def mostrar_resultado(
@@ -267,7 +661,7 @@ def mostrar_resultado(
     )
 
     # ========================================================
-    # RESALTAR RESPUESTA 1 EN AMARILLO
+    # RESALTAR NOMBRE DE INICIATIVA EN AMARILLO
     # ========================================================
 
     if nombre_iniciativa:
@@ -302,7 +696,7 @@ def mostrar_resultado(
     )
 
     # ========================================================
-    # RESALTAR TODOS LOS DOCUMENTOS EN VERDE
+    # RESALTAR CATEGORÍAS SELECCIONADAS EN VERDE
     # ========================================================
 
     for documento in categorias_requeridas:
@@ -420,6 +814,39 @@ def aceptar():
     subproceso = entrada_subproceso.get().strip()
 
     # --------------------------------------------------------
+    # VALIDAR NOMBRE
+    # --------------------------------------------------------
+
+    if not nombre_iniciativa:
+
+        messagebox.showwarning(
+            "Información pendiente",
+            "Por favor ingresa el nombre de la iniciativa, producto, "
+            "servicio, proceso o tema.",
+            parent=ventana
+        )
+
+        entrada_nombre.focus_set()
+
+        return
+
+    # --------------------------------------------------------
+    # VALIDAR SUBPROCESO
+    # --------------------------------------------------------
+
+    if not subproceso:
+
+        messagebox.showwarning(
+            "Información pendiente",
+            "Por favor ingresa el Subproceso objetivo.",
+            parent=ventana
+        )
+
+        entrada_subproceso.focus_set()
+
+        return
+
+    # --------------------------------------------------------
     # VALIDAR LAS 10 PREGUNTAS
     # --------------------------------------------------------
 
@@ -443,9 +870,9 @@ def aceptar():
             respuesta
         )
 
-    # --------------------------------------------------------
-    # OBTENER CATEGORÍAS MARCADAS COMO "SÍ"
-    # --------------------------------------------------------
+    # ========================================================
+    # OBTENER ÚNICAMENTE LAS CATEGORÍAS MARCADAS COMO "SÍ"
+    # ========================================================
 
     categorias_requeridas = []
 
@@ -457,9 +884,9 @@ def aceptar():
                 preguntas_documentos[i]["documento"]
             )
 
-    # --------------------------------------------------------
-    # TEXTO DE CATEGORÍAS
-    # --------------------------------------------------------
+    # ========================================================
+    # CONSTRUIR LISTA DINÁMICA DE CATEGORÍAS
+    # ========================================================
 
     if categorias_requeridas:
 
@@ -468,134 +895,114 @@ def aceptar():
             for categoria in categorias_requeridas
         )
 
-        categorias_parentesis = ", ".join(
-            categorias_requeridas
-        )
-
     else:
 
         categorias_texto = (
-            "No se marcó ninguna categoría como requerida."
-        )
-
-        categorias_parentesis = (
-            "ninguna categoría fue marcada como Sí"
+            "No se seleccionó ninguna categoría como requerida."
         )
 
     # ========================================================
     # CONSTRUIR PROMPT
     # ========================================================
 
-    mensaje = f"""Realiza una búsqueda exhaustiva en DocManagement sobre la siguiente iniciativa, producto, servicio, proceso o tema:
+    mensaje = f"""EN LA RESPUESTA DEVUELVE OBLIGATORIAMENTE LAS 3 SECCIONES O FASES MENCIONADAS A CONTINUACIÓN:
 
-{nombre_iniciativa}
+Realiza una búsqueda exhaustiva en DocManagement sobre:
 
-La búsqueda debe incluir cualquier coincidencia encontrada en:
+TEMA: {nombre_iniciativa}
+SUBPROCESO OBJETIVO: {subproceso}
+
+Busca coincidencias en nombre, código, contenido, metadatos, anexos, referencias, títulos, tablas, OCR, documentos relacionados, procesos y subprocesos.
+
+
+FASE 1: IDENTIFICACIÓN
+
+Identifica todos los documentos relacionados con {nombre_iniciativa} sin excluir ninguno por estado, vigencia, clasificación, confidencialidad, borrador o formalidad.
+
+La relación puede establecerse mediante coincidencia exacta, sinónimos, acrónimos, abreviaturas, nombres comerciales, nombres técnicos y referencias asociadas.
+
+Para cada documento incluido muestra:
+
 - Nombre del documento.
-- Código del documento.
-- Contenido.
-- Metadatos.
-- Anexos.
-- Referencias.
-- Títulos y subtítulos.
-- Tablas.
-- OCR de imágenes.
-- Documentos relacionados.
 - Subproceso.
-
-IMPORTANTE:
-
-PRIMERA FASE:
-
-Debes identificar TODOS los documentos relacionados con el criterio de búsqueda sin excepción.
-
-No debes excluir documentos por:
-- Estado.
-- Vigencia.
-- Formalidad.
-- Clasificación.
-- Uso interno.
-- Confidencialidad.
-- Borrador.
-- Documento preliminar.
-- Documento no vinculante.
-- Documento reemplazado.
-
-Todo documento relacionado debe aparecer al menos una vez en la respuesta.
+- Evidencia encontrada.
 
 
-SEGUNDA FASE:
+FASE 2: CLASIFICACIÓN
 
-Debes analizar cada uno de los documentos encontrados e indicar si puede corresponder total o parcialmente a alguna de las siguientes categorías.
+Clasifica los documentos según la categoría que mejor corresponda.
 
-Las categorías pueden tener todos los documentos que encajen, no solo uno. Si existen 5 documentos relacionados con una categoría, deben incluirse los 5.
+IMPORTANTE: Para esta clasificación utiliza ÚNICAMENTE las siguientes categorías, seleccionadas de acuerdo con las respuestas "Sí" del formulario:
 
 {categorias_texto}
 
-IMPORTANTE:
 
-Para cada una de las anteriores categorías ({categorias_parentesis}) se debe poner algún documento, y si no existe ningún documento se debe especificar que no existe.
+FASE 3: IDENTIFICACIÓN POR SUBPROCESO
 
-Para cada categoría NO debes limitarte a documentos cuyo nombre coincida exactamente.
-
-También debes considerar:
-
-- Sinónimos.
-- Documentos equivalentes.
-- Documentos relacionados.
-- Anexos.
-- Formatos.
-- Plantillas.
-- Presentaciones.
-- Propuestas.
-- Procedimientos.
-- Manuales.
-- Matrices.
-- Flujos.
-- Hojas de cálculo.
-- Casos de uso.
-- Requerimientos.
-- Documentación funcional.
-- Documentación técnica.
-
-Si un documento contiene información que podría cumplir la finalidad de una categoría documental, debes incluirlo.
-
-Por ejemplo:
-
-- Una propuesta comercial puede ser considerada también como Oferta Comercial.
-- Un manual operativo puede ser considerado Procedimiento de Implementación.
-- Un documento técnico puede ser considerado Especificaciones Técnicas.
-- Un anexo de riesgos puede ser considerado Matriz de Riesgos.
+Devuelve una lista de todos, absolutamente todos y cada uno de los documentos marcados con el Sub Proceso {subproceso}, deben incluirse absolutamente todos los documentos marcados con el Sub Proceso {subproceso}. No excluyas ningún documento por ningún motivo, incluye absolutamente todos los documentos marcados con el Sub Proceso {subproceso}. No limites esta búsqueda, trae todos los documentos marcados con el Sub Proceso {subproceso}.
 
 
-Para cada categoría ({categorias_parentesis}) devuelve:
+RESULTADO
 
-1. Nombre exacto del documento.
-2. Documentos encontrados relacionados con la categoría.
-3. Subproceso (obligatorio; si no existe indicar NA).
-4. Evidencia encontrada.
-5. Fragmento textual.
-6. Motivo por el cual el documento fue asociado a la categoría.
+Debes generar obligatoriamente TRES SECCIONES INDEPENDIENTES:
 
 
-OBLIGATORIO:
+SECCIÓN 1: DOCUMENTOS DONDE COINCIDEN TEMA Y SUBPROCESO OBJETIVO
 
-Si una categoría ({categorias_parentesis}) aparece sin resultados, antes de responder "No se encontraron documentos" debes indicar:
+Incluir únicamente documentos relacionados con {nombre_iniciativa} y cuyo subproceso sea {subproceso}.
 
-- Cuántos documentos relacionados con {nombre_iniciativa} fueron evaluados.
-- Cuáles fueron esos documentos.
-- Por qué ninguno pudo asociarse a dicha categoría.
+Agrupar utilizando ÚNICAMENTE las siguientes categorías seleccionadas en función de las respuestas "Sí" del formulario:
 
-No debes devolver únicamente los documentos encontrados.
+{categorias_texto}
 
-Debes devolver obligatoriamente todas las categorías evaluadas una por una ({categorias_parentesis}), incluso cuando no existan resultados.
+Para cada categoría mostrar:
+
+- Documentos encontrados.
+- Subproceso.
+- Evidencia.
+
+Si no existen documentos indicar:
+
+No se encontraron documentos para esta categoría.
 
 
-Además, al final genera una sección llamada:
+SECCIÓN 2: DOCUMENTOS RELACIONADOS CON EL TEMA (SIN FILTRO DE SUBPROCESO)
 
-"DOCUMENTOS RELACIONADOS NO CLASIFICADOS"
+Incluir todos los documentos relacionados con {nombre_iniciativa}, independientemente del subproceso.
 
-donde se incluyan todos los documentos encontrados para {nombre_iniciativa} que no hayan sido asociados a ninguna categoría.
+Agrupar utilizando ÚNICAMENTE las siguientes categorías seleccionadas en función de las respuestas "Sí" del formulario:
+
+{categorias_texto}
+
+Para cada categoría mostrar:
+
+- Documentos encontrados.
+- Subproceso.
+- Evidencia.
+
+Si no existen documentos indicar:
+
+No se encontraron documentos para esta categoría.
+
+
+SECCIÓN 3: DOCUMENTOS DEL SUBPROCESO OBJETIVO
+
+Incluir todos los documentos asociados al subproceso {subproceso}. No excluyas ningún documento por ningún motivo, incluye absolutamente todos los documentos marcados con el Sub Proceso {subproceso}.
+
+Se debe mostrar:
+
+- Todos los documentos encontrados marcados con el subproceso "{subproceso}", deben incluirse absolutamente todos.
+
+
+VALIDACIONES OBLIGATORIAS
+
+- Todos los documentos encontrados fueron evaluados.
+- La Sección 1 contiene únicamente documentos donde coinciden tema y subproceso objetivo.
+- La Sección 2 contiene todos los documentos relacionados con el tema, independientemente del subproceso.
+- La Sección 3 contiene todos los documentos relacionados con el subproceso, independientemente del tema.
+- La búsqueda de la Sección 3 es independiente y no se limita a los documentos encontrados en las Fases 1 y 2.
+- Ninguna categoría seleccionada puede ser omitida.
+- Ningún documento relevante queda por fuera.
 """
 
     # --------------------------------------------------------
@@ -620,12 +1027,12 @@ ventana.title(
 )
 
 ventana.geometry(
-    "950x820"
+    "1100x900"
 )
 
 ventana.minsize(
-    750,
-    650
+    900,
+    700
 )
 
 ventana.configure(
@@ -640,7 +1047,7 @@ ventana.configure(
 header = tk.Frame(
     ventana,
     bg=COLOR_AZUL_OSCURO,
-    height=110
+    height=130
 )
 
 header.pack(
@@ -668,12 +1075,15 @@ titulo_principal.pack(
 subtitulo_principal = tk.Label(
     header,
     text=(
+        "El objetivo de esta herramienta es optimizar y facilitar la búsqueda "
+        "documental de las iniciativas registradas en DocManagement.\n\n"
         "Complete la información y responda las preguntas "
-        "para generar la búsqueda documental"
+        "para consultar y gestionar la documentación."
     ),
     font=("Arial", 10),
     bg=COLOR_AZUL_OSCURO,
-    fg="#DCEBFA"
+    fg="#DCEBFA",
+    justify="center"  # Centra ambas frases. Cambia a "left" si prefieres alineado a la izquierda.
 )
 
 subtitulo_principal.pack()
@@ -804,7 +1214,7 @@ tarjeta_info.pack(
 
 label_nombre = tk.Label(
     tarjeta_info,
-    text="Nombre de la iniciativa",
+    text="Nombre de la iniciativa, producto, servicio, proceso o tema",
     font=("Arial", 11, "bold"),
     bg=COLOR_TARJETA,
     fg=COLOR_TEXTO
@@ -840,7 +1250,7 @@ entrada_nombre.pack(
 
 label_subproceso = tk.Label(
     tarjeta_info,
-    text="Sub Proceso al que pertenece",
+    text="Sub Proceso objetivo",
     font=("Arial", 11, "bold"),
     bg=COLOR_TARJETA,
     fg=COLOR_TEXTO
@@ -1022,14 +1432,248 @@ for i, item in enumerate(
 
 
 # ============================================================
-# BOTÓN CONTINUAR
+# INFORMACIÓN SOBRE LOS BOTONES
 # ============================================================
 
-boton_aceptar = tk.Button(
+titulo_opciones = tk.Label(
     frame_formulario,
-    text="Generar búsqueda",
+    text="¿Qué deseas hacer?",
+    font=("Arial", 16, "bold"),
+    bg=COLOR_FONDO,
+    fg=COLOR_TEXTO
+)
+
+titulo_opciones.pack(
+    pady=(25, 5)
+)
+
+
+descripcion_opciones = tk.Label(
+    frame_formulario,
+    text=(
+        "Utiliza una de las siguientes opciones según lo que necesites consultar."
+    ),
+    font=("Arial", 10),
+    bg=COLOR_FONDO,
+    fg=COLOR_TEXTO_SECUNDARIO
+)
+
+descripcion_opciones.pack(
+    pady=(0, 15)
+)
+
+
+# ============================================================
+# CONTENEDOR DE INFORMACIÓN DE BOTONES
+# ============================================================
+
+tarjetas_botones = tk.Frame(
+    frame_formulario,
+    bg=COLOR_FONDO
+)
+
+tarjetas_botones.pack(
+    padx=50,
+    fill="x"
+)
+
+
+# ============================================================
+# INFORMACIÓN BOTÓN 1
+# ============================================================
+
+info_boton_1 = tk.Frame(
+    tarjetas_botones,
+    bg=COLOR_TARJETA,
+    highlightthickness=1,
+    highlightbackground=COLOR_BORDE,
+    width=300,
+    height=150
+)
+
+info_boton_1.pack(
+    side="left",
+    fill="both",
+    expand=True,
+    padx=5
+)
+
+info_boton_1.pack_propagate(
+    False
+)
+
+
+titulo_info_1 = tk.Label(
+    info_boton_1,
+    text="Generar Prompt",
+    font=("Arial", 11, "bold"),
+    bg=COLOR_TARJETA,
+    fg=COLOR_AZUL
+)
+
+titulo_info_1.pack(
+    pady=(12, 5)
+)
+
+
+texto_info_1 = tk.Label(
+    info_boton_1,
+    text=(
+        "Este botón permite generar el prompt de búsqueda listo "
+        "para copiar y pegar en el chatbot del agente de DocManager "
+        "y obtener la respuesta directamente del agente en el chat."
+    ),
+    font=("Arial", 9),
+    bg=COLOR_TARJETA,
+    fg=COLOR_TEXTO_SECUNDARIO,
+    wraplength=280,
+    justify="center"
+)
+
+texto_info_1.pack(
+    padx=10
+)
+
+
+# ============================================================
+# INFORMACIÓN BOTÓN 2
+# ============================================================
+
+info_boton_2 = tk.Frame(
+    tarjetas_botones,
+    bg=COLOR_TARJETA,
+    highlightthickness=1,
+    highlightbackground=COLOR_BORDE,
+    width=300,
+    height=150
+)
+
+info_boton_2.pack(
+    side="left",
+    fill="both",
+    expand=True,
+    padx=5
+)
+
+info_boton_2.pack_propagate(
+    False
+)
+
+
+titulo_info_2 = tk.Label(
+    info_boton_2,
+    text="Listado de documentos",
+    font=("Arial", 11, "bold"),
+    bg=COLOR_TARJETA,
+    fg=COLOR_AZUL
+)
+
+titulo_info_2.pack(
+    pady=(12, 5)
+)
+
+
+texto_info_2 = tk.Label(
+    info_boton_2,
+    text=(
+        "Este botón permite acceder a todo el listado de absolutamente "
+        "todos los documentos disponibles en DocManagement, donde podrá "
+        "filtrar por nombre, Sub Proceso, Proceso, Gerencia, etc."
+    ),
+    font=("Arial", 9),
+    bg=COLOR_TARJETA,
+    fg=COLOR_TEXTO_SECUNDARIO,
+    wraplength=280,
+    justify="center"
+)
+
+texto_info_2.pack(
+    padx=10
+)
+
+
+# ============================================================
+# INFORMACIÓN BOTÓN 3
+# ============================================================
+
+info_boton_3 = tk.Frame(
+    tarjetas_botones,
+    bg=COLOR_TARJETA,
+    highlightthickness=1,
+    highlightbackground=COLOR_BORDE,
+    width=300,
+    height=150
+)
+
+info_boton_3.pack(
+    side="left",
+    fill="both",
+    expand=True,
+    padx=5
+)
+
+info_boton_3.pack_propagate(
+    False
+)
+
+
+titulo_info_3 = tk.Label(
+    info_boton_3,
+    text="Documentos necesarios",
+    font=("Arial", 11, "bold"),
+    bg=COLOR_TARJETA,
+    fg=COLOR_AZUL
+)
+
+titulo_info_3.pack(
+    pady=(12, 5)
+)
+
+
+texto_info_3 = tk.Label(
+    info_boton_3,
+    text=(
+        "Este botón le permite conocer todos los documentos que "
+        "necesitaría tener esta iniciativa según las respuestas "
+        "que marque en las preguntas del cuestionario."
+    ),
+    font=("Arial", 9),
+    bg=COLOR_TARJETA,
+    fg=COLOR_TEXTO_SECUNDARIO,
+    wraplength=280,
+    justify="center"
+)
+
+texto_info_3.pack(
+    padx=10
+)
+
+
+# ============================================================
+# BOTONES PRINCIPALES
+# ============================================================
+
+botones_principales = tk.Frame(
+    frame_formulario,
+    bg=COLOR_FONDO
+)
+
+botones_principales.pack(
+    pady=20,
+    padx=40,
+    fill="x"
+)
+
+
+# ------------------------------------------------------------
+# BOTÓN 1 - GENERAR PROMPT
+# ------------------------------------------------------------
+
+boton_aceptar = tk.Button(
+    botones_principales,
+    text="Generar Prompt de Búsqueda\npara el bot DocManager",
     command=aceptar,
-    font=("Arial", 12, "bold"),
+    font=("Arial", 10, "bold"),
     bg=COLOR_AZUL,
     fg=COLOR_BLANCO,
     activebackground=COLOR_AZUL_OSCURO,
@@ -1037,12 +1681,77 @@ boton_aceptar = tk.Button(
     relief="flat",
     bd=0,
     cursor="hand2",
-    width=22,
-    pady=12
+    width=30,
+    height=3,
+    wraplength=230,
+    justify="center"
 )
 
 boton_aceptar.pack(
-    pady=30
+    side="left",
+    fill="x",
+    expand=True,
+    padx=5
+)
+
+
+# ------------------------------------------------------------
+# BOTÓN 2 - LISTADO DOCUMENTOS
+# ------------------------------------------------------------
+
+boton_listado = tk.Button(
+    botones_principales,
+    text="Consulte el listado de todos los\ndocumentos que existen en DocManagement",
+    command=abrir_listado_documentos,
+    font=("Arial", 10, "bold"),
+    bg=COLOR_AZUL_OSCURO,
+    fg=COLOR_BLANCO,
+    activebackground=COLOR_AZUL,
+    activeforeground=COLOR_BLANCO,
+    relief="flat",
+    bd=0,
+    cursor="hand2",
+    width=30,
+    height=3,
+    wraplength=230,
+    justify="center"
+)
+
+boton_listado.pack(
+    side="left",
+    fill="x",
+    expand=True,
+    padx=5
+)
+
+
+# ------------------------------------------------------------
+# BOTÓN 3 - DOCUMENTOS NECESARIOS
+# ------------------------------------------------------------
+
+boton_documentos_necesarios = tk.Button(
+    botones_principales,
+    text="¿Qué documentos necesitaría\npara esta iniciativa?",
+    command=mostrar_documentos_necesarios,
+    font=("Arial", 10, "bold"),
+    bg="#2E7D32",
+    fg=COLOR_BLANCO,
+    activebackground="#1B5E20",
+    activeforeground=COLOR_BLANCO,
+    relief="flat",
+    bd=0,
+    cursor="hand2",
+    width=30,
+    height=3,
+    wraplength=230,
+    justify="center"
+)
+
+boton_documentos_necesarios.pack(
+    side="left",
+    fill="x",
+    expand=True,
+    padx=5
 )
 
 
