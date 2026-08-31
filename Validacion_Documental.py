@@ -932,8 +932,6 @@ FASE 2: CLASIFICACIÓN
 
 Clasifica los documentos según la categoría que mejor corresponda.
 
-IMPORTANTE: Para esta clasificación utiliza ÚNICAMENTE las siguientes categorías, seleccionadas de acuerdo con las respuestas "Sí" del formulario:
-
 {categorias_texto}
 
 
@@ -951,7 +949,7 @@ SECCIÓN 1: DOCUMENTOS DONDE COINCIDEN TEMA Y SUBPROCESO OBJETIVO
 
 Incluir únicamente documentos relacionados con {nombre_iniciativa} y cuyo subproceso sea {subproceso}.
 
-Agrupar utilizando ÚNICAMENTE las siguientes categorías seleccionadas en función de las respuestas "Sí" del formulario:
+Agrupar utilizando ÚNICAMENTE las siguientes categorías:
 
 {categorias_texto}
 
@@ -970,7 +968,7 @@ SECCIÓN 2: DOCUMENTOS RELACIONADOS CON EL TEMA (SIN FILTRO DE SUBPROCESO)
 
 Incluir todos los documentos relacionados con {nombre_iniciativa}, independientemente del subproceso.
 
-Agrupar utilizando ÚNICAMENTE las siguientes categorías seleccionadas en función de las respuestas "Sí" del formulario:
+Agrupar utilizando ÚNICAMENTE las siguientes categorías:
 
 {categorias_texto}
 
@@ -991,7 +989,7 @@ Incluir todos los documentos asociados al subproceso {subproceso}. No excluyas n
 
 Se debe mostrar:
 
-- Todos los documentos encontrados marcados con el subproceso "{subproceso}", deben incluirse absolutamente todos.
+- Todos los documentos encontrados marcados con el subproceso {subproceso}, deben incluirse absolutamente todos.
 
 
 VALIDACIONES OBLIGATORIAS
